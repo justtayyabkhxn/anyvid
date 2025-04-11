@@ -9,14 +9,18 @@
     "lint": "next lint"
   },
   "engines": {
-  "node": "18.x"
-},
+    "node": "18.x"
+  },
   "dependencies": {
+    "lightningcss": "^1.21.0",
     "lucide-react": "^0.487.0",
     "mongoose": "^8.13.2",
     "next": "^15.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
+  },
+  "resolutions": {
+    "lightningcss": "1.21.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
