@@ -1,12 +1,17 @@
-// tailwind.config.js
-module.exports = {
-  content: ['./app/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
+/** @type {import('tailwindcss').Config} */
+const config = {
+  content: [
+    "./app/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
     extend: {
       fontFamily: {
-        yatra: ['var(--font-yatra)'],
+        sans: ["Inter", "sans-serif"],
       },
     },
   },
   plugins: [],
 };
+
+export default config;
