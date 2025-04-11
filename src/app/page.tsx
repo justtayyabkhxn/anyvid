@@ -9,8 +9,10 @@ export default function Home() {
     <>
       <Head>
         <title>AnyVid - All-in-One Video Downloader</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link
-          href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Yatra+One&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Yatra+One&display=swap"
           rel="stylesheet"
         />
       </Head>
