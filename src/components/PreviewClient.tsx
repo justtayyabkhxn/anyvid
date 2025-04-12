@@ -1,11 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 
 export default function PreviewClient() {
   const searchParams = useSearchParams();
   const thumbnail = searchParams?.get("thumbnail");
   const downloadUrl = searchParams?.get("downloadUrl");
+  const title = searchParams?.get("title");
 
   if (!thumbnail || !downloadUrl) {
     return (
@@ -17,12 +19,19 @@ export default function PreviewClient() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white px-6 py-12">
-      <h1 className="text-3xl font-bold mb-6">Your Video is Ready</h1>
-      <img
-        src={thumbnail}
-        alt="Video Thumbnail"
-        className="rounded shadow-md max-w-full max-h-[400px] mb-8"
-      />
+      <h1 className="text-3xl font-bold mb-4">Your Video is Ready</h1>
+      <h2 className="text-2xl font-semibold mb-6">{title || "No title found"}</h2>
+
+      <div className="relative w-[300px] h-[400px] mb-8">
+        <Image
+          src={thumbnail}
+          alt="Video Thumbnail"
+          layout="fill"
+          objectFit="cover"
+          className="rounded-lg shadow-lg"
+        />
+      </div>
+
       <a
         href={downloadUrl}
         target="_blank"

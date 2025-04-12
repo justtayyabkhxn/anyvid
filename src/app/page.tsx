@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Head from "next/head";
 import Link from "next/link";
@@ -9,11 +9,25 @@ import "./globals.css";
 
 export default function Home() {
   const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [seconds, setSeconds] = useState(0);
   const router = useRouter();
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (loading) {
+      setSeconds(0); // reset counter
+      timer = setInterval(() => {
+        setSeconds((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer); // cleanup
+  }, [loading]);
 
   const handleDownload = async () => {
     if (!url) return alert("Please paste a valid URL");
 
+    setLoading(true);
     try {
       const res = await fetch("/api/download", {
         method: "POST",
@@ -29,7 +43,7 @@ export default function Home() {
         router.push(
           `/preview?thumbnail=${encodeURIComponent(
             data.thumbnail
-          )}&downloadUrl=${encodeURIComponent(data.downloadUrl)}`
+          )}&downloadUrl=${encodeURIComponent(data.downloadUrl)}&title=${encodeURIComponent(data.title)}`
         );
       } else {
         alert("Could not process this video. Try another.");
@@ -37,6 +51,8 @@ export default function Home() {
     } catch (err) {
       console.error(err);
       alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,9 +82,12 @@ export default function Home() {
           />
           <button
             onClick={handleDownload}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-m px-3 py-3 rounded-lg cursor-pointer"
+            disabled={loading}
+            className={`${
+              loading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 text-center"
+            } text-white font-bold text-m px-3 py-3 rounded-lg  gap-2 text-center `}
           >
-            Download
+            {loading ? `Processing... (${seconds}s)` : "Download"}
           </button>
         </div>
 

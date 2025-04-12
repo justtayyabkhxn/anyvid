@@ -1,28 +1,34 @@
 // src/app/api/download/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
+import { exec } from "child_process";
+import { promisify } from "util";
+
+const execAsync = promisify(exec);
 
 export async function POST(req: NextRequest) {
+  const { url } = await req.json();
+
+  if (!url) {
+    return NextResponse.json({ error: "No URL provided" }, { status: 400 });
+  }
+
   try {
-    const body = await req.json();
-    const { url } = body;
-    
-    if (!url) {
-      return NextResponse.json({ error: "URL is required" }, { status: 400 });
-    }
+    // Run yt-dlp to get direct URL
+    const command = `yt-dlp -J "${url}"`;
+    const { stdout } = await execAsync(command);
+    const metadata = JSON.parse(stdout);
 
-    // Dummy response for testing – replace with actual logic later
-    const response = {
-      thumbnail: "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
-      downloadUrl: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
-    };
+    const downloadUrl = metadata.url || metadata.formats?.[0]?.url || "";
+    const thumbnail = metadata.thumbnail || "";
+    const title = metadata.title || "";
 
-    return NextResponse.json(response, { status: 200 });
-  } catch (error) {
-    console.error("API error:", error);
-    return NextResponse.json(
-      { error: "Failed to process the request" },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      thumbnail,
+      downloadUrl,
+      title,
+    });
+  } catch (err: any) {
+    console.error("yt-dlp error:", err);
+    return NextResponse.json({ error: "Failed to extract video" }, { status: 500 });
   }
 }
