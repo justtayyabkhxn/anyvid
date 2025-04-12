@@ -2,10 +2,10 @@
 
 import { useSearchParams } from "next/navigation";
 
-export default function PreviewPage() {
+export default function PreviewClient() {
   const searchParams = useSearchParams();
-  const thumbnail = searchParams!.get("thumbnail");
-  const downloadUrl = searchParams!.get("downloadUrl");
+  const thumbnail = searchParams?.get("thumbnail");
+  const downloadUrl = searchParams?.get("downloadUrl");
 
   if (!thumbnail || !downloadUrl) {
     return (
