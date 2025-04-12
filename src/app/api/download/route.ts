@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       downloadUrl,
       title,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("yt-dlp error:", err);
     return NextResponse.json({ error: "Failed to extract video" }, { status: 500 });
   }
