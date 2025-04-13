@@ -1,34 +1,34 @@
-// src/app/api/download/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { exec } from "child_process";
-import { promisify } from "util";
+// pages/api/download.ts
 
-const execAsync = promisify(exec);
+import type { NextApiRequest, NextApiResponse } from "next";
 
-export async function POST(req: NextRequest) {
-  const { url } = await req.json();
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  const { url } = req.body;
 
   if (!url) {
-    return NextResponse.json({ error: "No URL provided" }, { status: 400 });
+    return res.status(400).json({ error: "Missing URL" });
   }
 
   try {
-    // Run yt-dlp to get direct URL
-    const command = `yt-dlp -J "${url}"`;
-    const { stdout } = await execAsync(command);
-    const metadata = JSON.parse(stdout);
+    const apiRes = await fetch(`https://yt-dlp-api-hmbr.onrender.com/api/download?url=${encodeURIComponent(url)}`);
+    const data = await apiRes.json();
 
-    const downloadUrl = metadata.url || metadata.formats?.[0]?.url || "";
-    const thumbnail = metadata.thumbnail || "";
-    const title = metadata.title || "";
+    if (!data.download || !data.thumbnail || !data.title) {
+      console.error("Invalid response from yt-dlp-api:", data);
+      return res.status(500).json({ error: "Invalid response from yt-dlp API" });
+    }
 
-    return NextResponse.json({
-      thumbnail,
-      downloadUrl,
-      title,
+    res.status(200).json({
+      title: data.title,
+      thumbnail: data.thumbnail,
+      downloadUrl: data.download,
     });
-  } catch (err: unknown) {
-    console.error("yt-dlp error:", err);
-    return NextResponse.json({ error: "Failed to extract video" }, { status: 500 });
+  } catch (error) {
+    console.error("API call failed:", error);
+    res.status(500).json({ error: "Something went wrong" });
   }
 }

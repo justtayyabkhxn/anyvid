@@ -16,12 +16,12 @@ export default function Home() {
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (loading) {
-      setSeconds(0); // reset counter
+      setSeconds(0);
       timer = setInterval(() => {
         setSeconds((prev) => prev + 1);
       }, 1000);
     }
-    return () => clearInterval(timer); // cleanup
+    return () => clearInterval(timer);
   }, [loading]);
 
   const handleDownload = async () => {
@@ -31,22 +31,21 @@ export default function Home() {
     try {
       const res = await fetch("/api/download", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url }),
       });
+       
 
       const data = await res.json();
 
-      if (data.thumbnail && data.downloadUrl) {
+      if (res.ok && data.thumbnail && data.downloadUrl) {
         router.push(
           `/preview?thumbnail=${encodeURIComponent(
             data.thumbnail
           )}&downloadUrl=${encodeURIComponent(data.downloadUrl)}&title=${encodeURIComponent(data.title)}`
         );
       } else {
-        alert("Could not process this video. Try another.");
+        alert(data?.error || "Could not process this video. Try another.");
       }
     } catch (err) {
       console.error(err);
@@ -84,8 +83,8 @@ export default function Home() {
             onClick={handleDownload}
             disabled={loading}
             className={`${
-              loading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 text-center"
-            } text-white font-bold text-m px-3 py-3 rounded-lg  gap-2 text-center `}
+              loading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+            } text-white font-bold text-m px-3 py-3 rounded-lg`}
           >
             {loading ? `Processing... (${seconds}s)` : "Download"}
           </button>
