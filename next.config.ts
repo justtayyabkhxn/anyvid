@@ -11,6 +11,7 @@ const config: NextConfig = {
       'static.licdn.com',
       "pbs.twimg.com",
       "external-preview.redd.it",
+      'scontent-sea1-1.cdninstagram.com'
     ],
   },
 };
